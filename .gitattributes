@@ -1,0 +1,13 @@
+* text=auto eol=lf
+# Preserve the bytes used by the Blender release, including source line endings.
+extension/weft_replay/** -text
+*.dll binary
+*.png binary
+*.jpg binary
+*.webp binary
+*.blend binary
+*.wav binary
+*.glb binary
+*.i16 binary
+*.f32 binary
+*.sdf binary

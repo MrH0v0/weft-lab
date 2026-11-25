@@ -1,0 +1,16 @@
+/dist/
+/build/
+__pycache__/
+*.py[cod]
+*.blend1
+*.exp
+*.obj
+*.pdb
+*.lib
+# Local inputs and generated projects from the Lisa example.
+/examples/lisa/**/*.blend
+!/examples/lisa/weft-yarn.blend
+/examples/lisa/**/*.pmx
+/examples/lisa/**/*.zip
+/examples/lisa/**/Texture/
+/examples/lisa/**/使用规则.txt

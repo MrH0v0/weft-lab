@@ -1,0 +1,14 @@
+schema_version = "1.0.0"
+id = "weft_replay"
+version = "0.4.39"
+name = "Weft Lab • Stocking Interaction"
+tagline = "Bind stockings, tear fabric, pour water and inspect probes"
+maintainer = "Weft Lab"
+type = "add-on"
+blender_version_min = "5.3.0"
+license = ["SPDX:GPL-3.0-or-later"]
+tags = ["Animation", "Physics"]
+
+[build]
+paths_exclude_pattern = ["__pycache__/", "*.pyc", "data/geometry.bin"]
+
