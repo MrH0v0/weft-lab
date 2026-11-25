@@ -1,8 +1,12 @@
 # Weft Lab
 
+![Weft Lab 针织样卡，左侧是绷紧、首针断开和相邻针脱圈的微距，右侧是湿袜被抓起时的孔缘](docs/social-preview.jpg)
+
 一个能在 Blender 3D 视口里直接“上手撕”的针织袜面交互插件。
 
 按住鼠标轻拽，能看到织物从皮肤表面被拉起。继续往外拉，袜面会顺着针织纹路漏针、开孔。松手后孔缘会自然回弹，你还可以抓着旧孔旁边的料子接着撕，或者把两个孔之间剩下的布桥拉断。切到湿态模式后，还能往袜面上加水，观察水膜扩散、织物吸水以及重新贴合皮肤的过程。
+
+[演示视频](#演示视频) · [物理状态图解](docs/physics-states.md) · [安装](#安装)
 
 ## 演示视频
 
@@ -76,3 +80,5 @@ blender --command extension validate dist/weft_replay-0.4.40.zip
 Weft Lab 的源码采用 **MIT**，包括针织与撕裂算法、原生几何内核和构建脚本。包含 Blender Python API 绑定的完整扩展同时按 **GPL-3.0-or-later** 提供。[MIT 许可](LICENSE) · [扩展 GPL 许可](extension/weft_replay/LICENSE.txt) · [Blender 许可说明](https://www.blender.org/support/faq/)
 
 本版演示用的腿模、骨架、织物材质、摄影棚和干湿演示画面均由我制作，采用 MIT 许可。插件内置脚踝固定回放的人体几何源自 MakeHuman hm08，撕裂声取自 Joseph Sardin 的录音，二者的原始素材均为 CC0。[第三方声明](extension/weft_replay/THIRD_PARTY_NOTICES.md)
+
+感谢 Samuel Poincloux、Mokhtar Adda-Bedia 和 Frédéric Lechenault 对平针织物的研究。他们逐针测量了织物拉伸时的位移，用纱线的弯曲、总长度约束和针圈之间的连接关系解释织物的弹性，为理解这里的针圈形变提供了参考。[《Geometry and Elasticity of a Knitted Fabric》，Physical Review X 8, 021075（2018）](https://doi.org/10.1103/PhysRevX.8.021075)
