@@ -10,8 +10,12 @@ The bundled foot geometry derives from the MakeHuman hm08 base mesh, revision `a
 
 The Windows geometry module was built with Zig 0.14.1 targeting x86_64-windows-gnu. License notices supplied with the toolchain are retained for the native runtime components. [Zig](licenses/Zig-MIT.txt) · [libc++](licenses/LLVM-libcxx.txt) · [libc++abi](licenses/LLVM-libcxxabi.txt) · [libunwind](licenses/LLVM-libunwind.txt) · [mingw-w64](licenses/mingw-w64.txt)
 
-## Lisa demo and preview
+## Leg study and preview
 
-The README images and showcase film feature Lisa from *Genshin Impact*. Recorded Blender interactions drive the fabric shown in the EEVEE renders. The character and model are © miHoYo. The model editor is 神帝宇. The original model package includes its usage rules, including restrictions on redistribution and commercial use. The demo builder reads a locally supplied original PMX and produces a local Blender scene. The original character, model, character textures, and showcase images and film retain the model's terms. [Official distribution event](https://www.bilibili.com/blackboard/activity-CCayRh076B.html)
+The standalone leg project, its hand-authored mesh and rig, yarn maps, studio, and dry/wet demonstration images and film are original Weft Lab work, released under the repository's MIT license.
+
+## Optional historical Lisa builder
+
+The v0.4.39 historical demo builder takes a user-supplied original Lisa PMX from *Genshin Impact*. The character and model are © miHoYo, with model editing by 神帝宇. The original model package includes its own usage rules. [Official distribution event](https://www.bilibili.com/blackboard/activity-CCayRh076B.html)
 
 The separate demo builder includes the PMX module from MMD Tools, copyright 2014 MMD Tools authors, under its original GPLv3 license. Its source and license are included in the demo tool archive. [Upstream module](https://github.com/MMD-Blender/blender_mmd_tools/blob/e1ceb3e5944acdb3aecc97ff40f54737853ae215/mmd_tools/core/pmx/__init__.py) · [Upstream license](https://github.com/MMD-Blender/blender_mmd_tools/blob/e1ceb3e5944acdb3aecc97ff40f54737853ae215/LICENSE)

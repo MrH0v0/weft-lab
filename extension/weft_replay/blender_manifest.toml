@@ -1,6 +1,6 @@
 schema_version = "1.0.0"
 id = "weft_replay"
-version = "0.4.39"
+version = "0.4.40"
 name = "Weft Lab • Stocking Interaction"
 tagline = "Bind stockings, tear fabric, pour water and inspect probes"
 maintainer = "Weft Lab"

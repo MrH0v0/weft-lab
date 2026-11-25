@@ -14,3 +14,5 @@ __pycache__/
 /examples/lisa/**/*.zip
 /examples/lisa/**/Texture/
 /examples/lisa/**/使用规则.txt
+/examples/leg/**/*.blend
+!/examples/leg/weft-yarn.blend

@@ -4,33 +4,25 @@
 
 按住鼠标轻拽，能看到织物从皮肤表面被拉起。继续往外拉，袜面会顺着针织纹路漏针、开孔。松手后孔缘会自然回弹，你还可以抓着旧孔旁边的料子接着撕，或者把两个孔之间剩下的布桥拉断。切到湿态模式后，还能往袜面上加水，观察水膜扩散、织物吸水以及重新贴合皮肤的过程。
 
-![丽莎与松手后的袜面近景，孔边能看见针圈和游离细纱](docs/preview.jpg)
+![原创试穿腿模的两处近景，左侧是干态孔缘，右侧是水落上针织表面](docs/preview.jpg)
 
-下面的短片截取了拉断布桥和松手的过程。1080p 完整版从第一次轻拉开始，最后绕到孔岸侧面看纱线反光。画面使用真实视口抓取产生的网格，在 Blender EEVEE 中逐帧渲染。[下载完整短片](https://github.com/MrH0v0/weft-lab/releases/download/v0.4.39/weft-lab-lisa-showcase-0.4.39.mp4) · [查看 2560 × 1440 孔岸原图](docs/yarn-detail.jpg)
+短片前半段从第一次轻拉拍到两处缺口贯通。后半段在完整袜面上泼入 2 mL 水，跟着水膜看织层吸水，再看同一块湿布被抓起、松手回贴和再次拉破。画面取自真实 Blender 视口操作产生的网格和液体状态，使用 EEVEE 逐帧渲染。[下载 1080p 干湿演示](https://github.com/MrH0v0/weft-lab/releases/download/v0.4.40/weft-lab-leg-dry-wet-0.4.40.mp4) · [查看孔缘原图](docs/yarn-detail.jpg)
 
-![两处缺口之间的布桥被拉断，松手后仍然贯通](docs/lisa-knit.webp)
-
-演示角色为《原神》丽莎。模型版权归 miHoYo，模型编辑为神帝宇。
+![干态拉断布桥，随后湿态加水、抓起和回贴](docs/leg-dry-wet.webp)
 
 ## 安装
 
-当前版本 **0.4.39**，已在 **Windows x64 + Blender 5.3.0** 下验证通过。插件要求 Blender 5.3.0 及以上，其他系统暂未实测。
+当前版本 **0.4.40**，已在 **Windows x64 + Blender 5.3.0** 下验证通过。插件要求 Blender 5.3.0 及以上，其他系统暂未实测。
 
-1. 在 **Releases → Assets** 下载插件包 `weft_replay-0.4.39.zip`。想跟着丽莎演示试撕，再下载 `weft-lab-lisa-demo-0.4.39.zip`。[前往下载](https://github.com/MrH0v0/weft-lab/releases/tag/v0.4.39)
+1. 在 **Releases → Assets** 下载插件包 `weft_replay-0.4.40.zip` 和已绑定的示例工程 `weft-lab-leg-studio-0.4.40.blend`。[前往下载](https://github.com/MrH0v0/weft-lab/releases/tag/v0.4.40)
 2. 打开 Blender，进入 **编辑 → 偏好设置 → 获取扩展**，点右上角菜单选择 **从磁盘安装**，选中插件 ZIP 并启用。
-3. 解压丽莎演示工具和官方丽莎 1.4 模型包。在工具目录运行下面的命令，把第一个路径换成自己的 `丽莎.pmx`。这会在本机生成带完整角色、已绑定右袜和屈膝动作的工程。[官方模型包](https://activity.hdslb.com/blackboard/static/20210316/4d40bc4f98f94fbc71c235832ce3efd4/QIoO5EgUPA.zip) · [演示生成说明](examples/lisa/README.md)
-
-   ```console
-   blender --background --python-exit-code 1 --python make_lisa.py -- "模型/丽莎/丽莎.pmx" "weft-lab-lisa.blend"
-   ```
-
-4. 打开生成的 `weft-lab-lisa.blend`，鼠标悬停在 3D 视口内按 `N` 展开侧栏，切到 **Weft Lab** 标签页即可。
+3. 打开下载的 `.blend`，鼠标悬停在 3D 视口内按 `N` 展开侧栏，切到 **Weft Lab**。腿模、骨架、针织贴图和摄影棚都已放在同一个工程内。[试穿腿模说明](examples/leg/README.md)
 
 ## 上手试撕
 
 **干态体验**
 
-1. 选择 **干态抓取**，把鼠标移到丽莎右腿有织纹的区域，按住左键先轻轻往外拖，再继续拉远。
+1. 选择 **干态抓取**，把鼠标移到小腿有织纹的区域，按住左键先轻轻往外拖，再继续拉远。
 2. 看到开孔后松手，下一把可以把抓点放在孔尖旁还有织纹的位置接着撕。
 3. 撕出两个相邻的孔后，去拽中间剩下的布料，可以看到布桥一点点变窄，直到彻底拉断贯通。
 
@@ -66,7 +58,7 @@
 
 ```console
 python tools/build_extension.py
-blender --command extension validate dist/weft_replay-0.4.39.zip
+blender --command extension validate dist/weft_replay-0.4.40.zip
 ```
 
 安装包会写入 `dist/`。Windows x64 原生几何模块的 C++ 源码和编译命令见[原生模块构建说明](tools/BUILD.md)。
@@ -75,4 +67,4 @@ blender --command extension validate dist/weft_replay-0.4.39.zip
 
 Weft Lab 贡献者编写的源码采用 **MIT**，包括针织与撕裂算法、原生几何内核和构建脚本。包含 Blender Python API 绑定的完整扩展同时按 **GPL-3.0-or-later** 提供。[MIT 许可](LICENSE) · [扩展 GPL 许可](extension/weft_replay/LICENSE.txt) · [Blender 许可说明](https://www.blender.org/support/faq/)
 
-丽莎模型与角色画面遵循原模型的使用规则。公开演示工具从使用者本机的官方模型生成工程。模型附带的《使用规则.txt》规定“请勿二配”。工具附带的 PMX 读取器来自 MMD Tools。插件内置脚踝回放的人体几何源自 MakeHuman hm08，撕裂声取自 Joseph Sardin 的录音，二者的原始素材均为 CC0。[丽莎模型活动页](https://www.bilibili.com/blackboard/activity-CCayRh076B.html) · [第三方声明](extension/weft_replay/THIRD_PARTY_NOTICES.md)
+本版演示用的腿模、骨架、织物材质、摄影棚和干湿演示画面均由 Weft Lab 制作，采用 MIT 许可。插件内置脚踝固定回放的人体几何源自 MakeHuman hm08，撕裂声取自 Joseph Sardin 的录音，二者的原始素材均为 CC0。[第三方声明](extension/weft_replay/THIRD_PARTY_NOTICES.md)

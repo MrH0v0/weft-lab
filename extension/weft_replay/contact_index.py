@@ -131,8 +131,13 @@ def transport_film(film,geometry,steps,dt,uptake_rate):
     connected,edge,length,width=geometry
     result=np.zeros(7)
     liquid=film.liquid
-    read=[film.transport_neighbours,connected,edge,length,width,film.area,film.capacity]
-    buffers=[np.ascontiguousarray(a) for a in read]+[film.outer,film.knit,film.momentum,result]
+    # Evaluated Blender positions may be float32. The native flux calculation
+    # expects each geometric field to use doubles, including the edge lengths.
+    buffers=[np.ascontiguousarray(film.transport_neighbours,dtype=np.int32),
+             np.ascontiguousarray(connected,dtype=np.uint8)]
+    buffers.extend(np.ascontiguousarray(a,dtype=np.float64)
+                   for a in (edge,length,width,film.area,film.capacity))
+    buffers.extend((film.outer,film.knit,film.momentum,result))
     _index.weft_transport_film(len(film.outer),steps,dt,film.pitch,liquid.viscosity,liquid.tension,
                                liquid.uptake,liquid.drying,uptake_rate,*(a.ctypes.data for a in buffers))
     film.flow+=result[:3]
