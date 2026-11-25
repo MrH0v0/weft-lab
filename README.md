@@ -73,6 +73,6 @@ blender --command extension validate dist/weft_replay-0.4.40.zip
 
 ## 许可与致谢
 
-Weft Lab 贡献者编写的源码采用 **MIT**，包括针织与撕裂算法、原生几何内核和构建脚本。包含 Blender Python API 绑定的完整扩展同时按 **GPL-3.0-or-later** 提供。[MIT 许可](LICENSE) · [扩展 GPL 许可](extension/weft_replay/LICENSE.txt) · [Blender 许可说明](https://www.blender.org/support/faq/)
+Weft Lab 的源码采用 **MIT**，包括针织与撕裂算法、原生几何内核和构建脚本。包含 Blender Python API 绑定的完整扩展同时按 **GPL-3.0-or-later** 提供。[MIT 许可](LICENSE) · [扩展 GPL 许可](extension/weft_replay/LICENSE.txt) · [Blender 许可说明](https://www.blender.org/support/faq/)
 
-本版演示用的腿模、骨架、织物材质、摄影棚和干湿演示画面均由 Weft Lab 制作，采用 MIT 许可。插件内置脚踝固定回放的人体几何源自 MakeHuman hm08，撕裂声取自 Joseph Sardin 的录音，二者的原始素材均为 CC0。[第三方声明](extension/weft_replay/THIRD_PARTY_NOTICES.md)
+本版演示用的腿模、骨架、织物材质、摄影棚和干湿演示画面均由我制作，采用 MIT 许可。插件内置脚踝固定回放的人体几何源自 MakeHuman hm08，撕裂声取自 Joseph Sardin 的录音，二者的原始素材均为 CC0。[第三方声明](extension/weft_replay/THIRD_PARTY_NOTICES.md)
