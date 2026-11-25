@@ -192,3 +192,73 @@ def finish_leg_yarn(material):
     link(nodes.new("ShaderNodeBsdfTransparent").outputs[0], mix.inputs[1])
     link(reflection.outputs[0], mix.inputs[2])
     link(mix.outputs[0], surface.inputs["Surface"])
+    finish_wet_yarn(material)
+
+
+def finish_wet_yarn(material):
+    """Use the sample's measured knit saturation and film depth to shade wet fibres."""
+    def math_node(tree, operation, *values):
+        node = tree.nodes.new("ShaderNodeMath")
+        node.operation = operation
+        for socket, value in zip(node.inputs, values):
+            if isinstance(value, (int, float)):
+                socket.default_value = value
+            else:
+                tree.links.new(value, socket)
+        return node.outputs[0]
+
+    def field(tree, name):
+        node = tree.nodes.new("ShaderNodeAttribute")
+        node.attribute_name = name
+        return node.outputs["Fac"]
+
+    # All four dyes keep the same dry endpoint. Feed the absorbed finish
+    # into the original optical model so stitch coverage and runs still apply.
+    settings = material.node_tree.nodes["Weft Dry Appearance"]
+    dye = settings.node_tree.copy()
+    dye.name = "Weft Lab • sample dye under water"
+    settings.node_tree = dye
+    output = next(n for n in dye.nodes if n.type == "GROUP_OUTPUT" and n.is_active_output)
+    colour = output.inputs["Yarn color"]
+    thickness = output.inputs["Thickness / Opacity"]
+    dry_colour = colour.links[0].from_socket
+    dry_thickness = thickness.links[0].from_socket
+    saturation = field(dye, "weft_knit_saturation")
+    saturation = math_node(dye, "MINIMUM", 1., math_node(dye, "MAXIMUM", saturation, 0.))
+    wet = math_node(dye, "POWER", saturation, .82)
+    tint = dye.nodes.new("ShaderNodeVectorMath")
+    tint.operation = "SCALE"
+    tint.label = "Water reduces yarn backscatter"
+    dye.links.new(dry_colour, tint.inputs[0])
+    dye.links.new(math_node(dye, "MULTIPLY_ADD", wet, -.72, 1.), tint.inputs["Scale"])
+    dye.links.new(tint.outputs[0], colour)
+    thickness_wet = math_node(dye, "MULTIPLY_ADD", wet, .15, dry_thickness)
+    dye.links.new(math_node(dye, "MINIMUM", 1., thickness_wet), thickness)
+
+    # Surface water produces a short directional glint while present. Only
+    # yarn receives this response, even when water crosses many open pores.
+    tree = material.node_tree
+    filament = next(n for n in tree.nodes if n.label == "Nylon filaments")
+    mix = next(n for n in tree.nodes if n.label == "Fibre reflection in the knit")
+    flow = next(n for n in tree.nodes if n.label == "Fibre axis, roughness, coverage")
+    dry_weight = mix.inputs[0].links[0].from_socket
+    dry_roughness = filament.inputs["Roughness"].links[0].from_socket
+    surface = tree.nodes.new("ShaderNodeMapRange")
+    surface.label = "Surface water on yarn"
+    surface.interpolation_type = "SMOOTHSTEP"
+    surface.inputs["From Min"].default_value = .003
+    surface.inputs["From Max"].default_value = .14
+    tree.links.new(field(tree, "weft_outer_film_mm"), surface.inputs["Value"])
+    # Loose water is rendered by the separate liquid surface. A coating
+    # starts reflecting on the yarn as the underlying knit actually wets.
+    absorbed = field(tree, "weft_knit_saturation")
+    film = math_node(tree, "MULTIPLY", surface.outputs[0], absorbed)
+    on_yarn = math_node(tree, "MULTIPLY", film, flow.outputs["Alpha"])
+    fresnel = tree.nodes.new("ShaderNodeFresnel")
+    fresnel.inputs["IOR"].default_value = 1.333
+    reflection = math_node(tree, "MULTIPLY_ADD", fresnel.outputs[0], .55, .058)
+    weight = math_node(tree, "MULTIPLY_ADD", on_yarn, reflection, dry_weight)
+    tree.links.new(math_node(tree, "MINIMUM", 1., weight), mix.inputs[0])
+    smoother = math_node(tree, "SUBTRACT", .18, dry_roughness)
+    tree.links.new(math_node(tree, "MULTIPLY_ADD", film, smoother, dry_roughness),
+                   filament.inputs["Roughness"])

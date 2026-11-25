@@ -302,7 +302,9 @@ def setup(scene,rig):
     scene.weft_wet.moving=False
     # Keep the travelling sheet clear enough to see the knit through the water.
     scene.weft_wet.color=(.984,.994,1.)
-    scene.weft_wet.opacity=.49
+    scene.weft_wet.opacity=.66
+    scene.weft_wet.volume=3.
+    scene.weft_wet.radius_mm=14.
     for screen in bpy.data.screens:
         for area in screen.areas:
             for editor in area.spaces:
