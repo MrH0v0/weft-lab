@@ -146,3 +146,49 @@ def add_yarn_reflection(material, maps):
         n.parent = frame
         n.location = ((i//3)*200, -(i%3)*230)
     mapping.location = (atlas.location.x-220, atlas.location.y)
+    finish_leg_yarn(material)
+
+
+def finish_leg_yarn(material):
+    """Apply the photographed sample finish to a material with baked yarn maps."""
+    tree = material.node_tree
+    nodes, link = tree.nodes, tree.links.new
+    glossy = next(n for n in nodes if n.label == "Nylon filaments")
+    reflection = next(n for n in nodes if n.label == "Fibre reflection in the knit")
+    factor = reflection.inputs[0].links[0].from_socket
+    budget = nodes.new("ShaderNodeMath")
+    budget.operation = "MULTIPLY"
+    budget.label = "Filament reflection budget"
+    budget.inputs[1].default_value = .235
+    link(factor, budget.inputs[0])
+    link(budget.outputs[0], reflection.inputs[0])
+    glossy.inputs["Color"].default_value = (.72, .66, .62, 1.)
+    glossy.inputs["Anisotropy"].default_value = .54
+    glossy.inputs["Normal"].links[0].from_node.inputs["Strength"].default_value = .45
+    source = glossy.inputs["Roughness"].links[0].from_socket
+    roughness = nodes.new("ShaderNodeMath")
+    roughness.operation = "MULTIPLY_ADD"
+    roughness.inputs[1].default_value = .75
+    roughness.inputs[2].default_value = .21
+    link(source, roughness.inputs[0])
+    link(roughness.outputs[0], glossy.inputs["Roughness"])
+
+    # Use the same mipmapped coverage field as the live gauge shader. Pores
+    # open where the simulated head and neck diverge under tension.
+    profile = next(n for n in nodes if n.type == "TEX_IMAGE" and n.image
+                   and n.image.name.startswith("live-loop-profile"))
+    channels = nodes.new("ShaderNodeSeparateColor")
+    link(profile.outputs["Color"], channels.inputs[0])
+    pores = nodes.new("ShaderNodeMapRange")
+    pores.label = "Transmission between yarns"
+    pores.interpolation_type = "SMOOTHERSTEP"
+    pores.inputs["From Min"].default_value = .07
+    pores.inputs["From Max"].default_value = .83
+    pores.inputs["To Min"].default_value = .64
+    link(channels.outputs["Blue"], pores.inputs["Value"])
+    surface = next(n for n in nodes if n.type == "OUTPUT_MATERIAL" and n.is_active_output)
+    mix = nodes.new("ShaderNodeMixShader")
+    link(pores.outputs[0], mix.inputs[0])
+    link(nodes.new("ShaderNodeBsdfTransparent").outputs[0], mix.inputs[1])
+    link(reflection.outputs[0], mix.inputs[2])
+    link(mix.outputs[0], surface.inputs["Surface"])

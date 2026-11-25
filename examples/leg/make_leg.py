@@ -112,27 +112,52 @@ def skin_finish():
     nodes,link=mat.node_tree.nodes,mat.node_tree.links.new
     shader=nodes.get("Principled BSDF")
     shader.inputs["Roughness"].default_value=.53
-    shader.inputs["Specular IOR Level"].default_value=.30
-    shader.inputs["Subsurface Weight"].default_value=.075
-    shader.inputs["Subsurface Scale"].default_value=.005
+    shader.inputs["Specular IOR Level"].default_value=.24
+    shader.inputs["Subsurface Weight"].default_value=.13
+    shader.inputs["Subsurface Scale"].default_value=.00115
     uv=nodes.new("ShaderNodeTexCoord")
     cloud=nodes.new("ShaderNodeTexNoise")
-    cloud.inputs["Scale"].default_value=8.
+    cloud.inputs["Scale"].default_value=36.
+    cloud.inputs["Detail"].default_value=2.8
     link(uv.outputs["Object"],cloud.inputs[0])
     ramp=nodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].color=(.45,.253,.196,1)
-    ramp.color_ramp.elements[1].color=(.63,.403,.320,1)
+    ramp.color_ramp.elements[0].color=(.342,.174,.143,1)
+    ramp.color_ramp.elements[1].color=(.568,.355,.280,1)
     link(cloud.outputs["Fac"],ramp.inputs[0])
-    link(ramp.outputs[0],shader.inputs["Base Color"])
     pore=nodes.new("ShaderNodeTexNoise")
-    pore.inputs["Scale"].default_value=1850.
-    pore.inputs["Detail"].default_value=1.6
+    pore.inputs["Scale"].default_value=1600.
+    pore.inputs["Detail"].default_value=2.4
     link(uv.outputs["Object"],pore.inputs[0])
     bump=nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value=.12
-    bump.inputs["Distance"].default_value=.000015
+    bump.inputs["Strength"].default_value=.30
+    bump.inputs["Distance"].default_value=.000065
     link(pore.outputs["Fac"],bump.inputs["Height"])
-    link(bump.outputs[0],shader.inputs["Normal"])
+    follicle = nodes.new("ShaderNodeTexVoronoi")
+    follicle.inputs["Scale"].default_value = 790.
+    link(uv.outputs["Object"], follicle.inputs["Vector"])
+    pores = nodes.new("ShaderNodeMapRange")
+    pores.interpolation_type = "SMOOTHERSTEP"
+    pores.inputs["From Min"].default_value = .085
+    pores.inputs["From Max"].default_value = .35
+    pores.inputs["To Min"].default_value = .89
+    link(follicle.outputs["Distance"], pores.inputs["Value"])
+    dye = nodes.new("ShaderNodeVectorMath")
+    dye.operation = "SCALE"
+    link(ramp.outputs[0], dye.inputs[0])
+    link(pores.outputs[0], dye.inputs["Scale"])
+    link(dye.outputs[0], shader.inputs["Base Color"])
+    rough = nodes.new("ShaderNodeMath")
+    rough.operation = "MULTIPLY_ADD"
+    rough.inputs[1].default_value = .19
+    rough.inputs[2].default_value = .45
+    link(pore.outputs["Fac"], rough.inputs[0])
+    link(rough.outputs[0], shader.inputs["Roughness"])
+    skin_relief = nodes.new("ShaderNodeBump")
+    skin_relief.inputs["Strength"].default_value = .28
+    skin_relief.inputs["Distance"].default_value = .00010
+    link(pores.outputs[0], skin_relief.inputs["Height"])
+    link(bump.outputs[0], skin_relief.inputs["Normal"])
+    link(skin_relief.outputs[0], shader.inputs["Normal"])
     return mat
 
 
@@ -182,44 +207,63 @@ def bind(scene,rig,addon):
     return sock
 
 
+def backdrop_mesh():
+    """Continuous floor-to-wall sweep for both the front and profile cameras."""
+    from math import cos, pi, sin
+    sectors = 112
+    radial = [(1.22, -.008)]
+    for i in range(1, 27):
+        angle = .5*pi*i/26
+        radial.append((1.22+.86*sin(angle), -.008+.86*(1-cos(angle))))
+    radial.append((2.08, 3.5))
+    directions = [(cos(2*pi*j/sectors), sin(2*pi*j/sectors)) for j in range(sectors)]
+    vertices = [(0., 0., -.008)]
+    vertices.extend((radius*x, radius*y, z) for radius, z in radial for x, y in directions)
+    faces = [(0, 1+j, 1+(j+1)%sectors) for j in range(sectors)]
+    for ring in range(len(radial)-1):
+        start = 1+ring*sectors
+        for j in range(sectors):
+            a, b = start+j, start+(j+1)%sectors
+            faces.append((a, a+sectors, b+sectors, b))
+    mesh = bpy.data.meshes.new("摄影棚 • 环形无缝背景")
+    mesh.from_pydata(vertices, [], faces, shade_flat=False)
+    mesh.update()
+    return mesh
+
+
 def studio(scene):
-    from math import sin,cos,pi
-    profile=[(3.,-.008),(-.75,-.008)]
-    for i in range(1,25):
-        angle=pi*i/48
-        profile.append((-.75-.85*sin(angle),-.008+.85*(1-cos(angle))))
-    profile.append((-1.60,3.5))
-    verts=[(x,y,z) for y,z in profile for x in (-4.,4.)]
-    mesh=bpy.data.meshes.new("摄影棚 • 曲面背景")
-    mesh.from_pydata(verts,[],[(i+1,i,i+2,i+3) for i in range(0,len(verts)-2,2)],shade_flat=False)
+    mesh=backdrop_mesh()
     background=bpy.data.objects.new(mesh.name,mesh)
     scene.collection.objects.link(background)
     background.hide_select=True
-    mat=bpy.data.materials.new("摄影棚 • 石墨紫")
+    # An orthographic pick starts outside the studio. Keep the wraparound set
+    # visible to render cameras and leave viewport rays free to hit the knit.
+    background.hide_set(True)
+    mat=bpy.data.materials.new("摄影棚 • 暖灰")
     mat.use_nodes=True
     diffuse=mat.node_tree.nodes.get("Principled BSDF")
-    diffuse.inputs["Base Color"].default_value=(.043,.030,.068,1)
-    diffuse.inputs["Roughness"].default_value=.90
+    diffuse.inputs["Base Color"].default_value=(.059,.057,.053,1)
+    diffuse.inputs["Roughness"].default_value=.94
     mesh.materials.append(mat)
     world=bpy.data.worlds.new("摄影棚 • 环境光")
     world.use_nodes=True
-    world.node_tree.nodes["Background"].inputs[0].default_value=(.31,.35,.47,1)
-    world.node_tree.nodes["Background"].inputs[1].default_value=.17
+    world.node_tree.nodes["Background"].inputs[0].default_value=(.37,.40,.44,1)
+    world.node_tree.nodes["Background"].inputs[1].default_value=.22
     scene.world=world
     lights=[
-        ("柔光箱",(1.15,.46,1.74),(0,0,.53),115,1.18,1.18,(1.,.84,.71)),
-        ("宽补光",(-1.05,1.23,1.36),(0,0,.52),40,1.50,1.50,(.77,.86,1.)),
-        ("轮廓光",(-.61,-.88,1.23),(0,0,.51),62,.65,.65,(.74,.77,1.)),
-        ("背景光",(.78,-.36,.93),(.47,-1.59,.81),42,.9,.9,(.59,.52,.86)),
-        ("冷条光",(-.43,.43,.78),(RIGHT_X,.032,.47),13,.15,.87,(.73,.86,1.)),
-        ("暖条光",(.54,-.09,.83),(RIGHT_X,.035,.50),16,.15,.94,(1.,.76,.56)),
+        ("柔光箱",(.56,.62,1.40),(.055,.025,.45),77,.88,1.20,(1.,.88,.80)),
+        ("宽补光",(-.84,.73,1.0),(.08,0,.46),14,.99,1.30,(.85,.91,1.)),
+        ("轮廓光",(-.64,-.65,1.16),(.08,0,.45),19,.72,.90,(.94,.96,1.)),
+        ("背景光",(.55,-.25,.90),(.47,-1.59,.75),25,1.,1.,(.84,.86,.90)),
+        ("冷条光",(-.54,.30,.81),(.08,0,.47),1.75,.47,.87,(.85,.93,1.)),
+        ("暖条光",(.57,-.18,.88),(.08,0,.47),3.1,.59,1.03,(1.,.89,.77)),
     ]
     for name,location,target,watts,w,h,tint in lights:
         lamp=bpy.data.lights.new(name,'AREA')
         lamp.energy,lamp.color=watts,tint
-        lamp.shape='DISK' if w==h else 'RECTANGLE'
+        lamp.shape='RECTANGLE'
         lamp.size=w
-        if w!=h:lamp.size_y=h
+        lamp.size_y=h
         obj=bpy.data.objects.new(name,lamp)
         scene.collection.objects.link(obj)
         obj.location=location
@@ -257,7 +301,8 @@ def setup(scene,rig):
     scene.render.filepath='//renders/weft-leg'
     scene.weft_wet.moving=False
     # Keep the travelling sheet clear enough to see the knit through the water.
-    scene.weft_wet.color=(.76,.91,1.)
+    scene.weft_wet.color=(.984,.994,1.)
+    scene.weft_wet.opacity=.49
     for screen in bpy.data.screens:
         for area in screen.areas:
             for editor in area.spaces:

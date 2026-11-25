@@ -4,17 +4,19 @@
 
 按住鼠标轻拽，能看到织物从皮肤表面被拉起。继续往外拉，袜面会顺着针织纹路漏针、开孔。松手后孔缘会自然回弹，你还可以抓着旧孔旁边的料子接着撕，或者把两个孔之间剩下的布桥拉断。切到湿态模式后，还能往袜面上加水，观察水膜扩散、织物吸水以及重新贴合皮肤的过程。
 
-![原创试穿腿模的两处近景，左侧是干态孔缘，右侧是水落上针织表面](docs/preview.jpg)
+![同一次轻拉的针圈微距，依次为绷紧、第一针断开和相邻针圈沿纵行脱开](docs/preview.jpg)
 
-短片前半段从第一次轻拉拍到两处缺口贯通。后半段在完整袜面上泼入 2 mL 水，跟着水膜看织层吸水，再看同一块湿布被抓起、松手回贴和再次拉破。画面取自真实 Blender 视口操作产生的网格和液体状态，使用 EEVEE 逐帧渲染。[下载 1080p 干湿演示](https://github.com/MrH0v0/weft-lab/releases/download/v0.4.40/weft-lab-leg-dry-wet-0.4.40.mp4) · [查看孔缘原图](docs/yarn-detail.jpg)
+短片从一只完整的袜面开始。左侧看袜面怎样离开皮肤，右侧放大同一次抓取中的针圈。用约八秒逐渐拉紧后，第一针断开，随后同一纵行的相邻针圈相继脱开。首断附近按四分之一速度播放，9.8 秒处定格第一针的透肤小口。19.6 秒处并排放大断前、首断和邻针脱开的三个物理步。接下来可以看到两孔之间的布桥被拉断，以及湿袜从泼水、吸水、抓起、松手回贴到再次拉破的过程。[下载 1080p 针圈慢拉短片](https://github.com/MrH0v0/weft-lab/releases/download/v0.4.40-demo.2/weft-lab-knit-study-0.4.40-r2.mp4) · [查看脱圈微距原图](docs/yarn-detail.jpg)
 
-![干态拉断布桥，随后湿态加水、抓起和回贴](docs/leg-dry-wet.webp)
+每个干态画面使用 Blender 抓取时实际提交的袜面网格和当步针圈数据，两个视角对准同一物理步。湿态拍摄使用插件的 2 mL 泼水操作。演示工程给纱线保留细小的反光，透过拉开的线圈可以看到下层皮肤。[同一处孔缘的材质与布光对照](docs/finish-comparison.jpg)
+
+![针圈慢拉、首断、布桥贯通和湿布回贴的真实仿真片段](docs/leg-dry-wet.webp)
 
 ## 安装
 
 当前版本 **0.4.40**，已在 **Windows x64 + Blender 5.3.0** 下验证通过。插件要求 Blender 5.3.0 及以上，其他系统暂未实测。
 
-1. 在 **Releases → Assets** 下载插件包 `weft_replay-0.4.40.zip` 和已绑定的示例工程 `weft-lab-leg-studio-0.4.40.blend`。[前往下载](https://github.com/MrH0v0/weft-lab/releases/tag/v0.4.40)
+1. 在 **Releases → Assets** 下载插件包 `weft_replay-0.4.40.zip` 和已绑定的示例工程 `weft-lab-leg-studio-0.4.40-r2.blend`。[前往下载](https://github.com/MrH0v0/weft-lab/releases/tag/v0.4.40-demo.2)
 2. 打开 Blender，进入 **编辑 → 偏好设置 → 获取扩展**，点右上角菜单选择 **从磁盘安装**，选中插件 ZIP 并启用。
 3. 打开下载的 `.blend`，鼠标悬停在 3D 视口内按 `N` 展开侧栏，切到 **Weft Lab**。腿模、骨架、针织贴图和摄影棚都已放在同一个工程内。[试穿腿模说明](examples/leg/README.md)
 
